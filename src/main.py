@@ -1,6 +1,6 @@
 import os
 import sys
-# DON'T CHANGE THIS !!!
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from flask import Flask, send_from_directory
@@ -10,7 +10,6 @@ from src.models.service import Service
 from src.models.appointment import Appointment
 from src.models.work_schedule import WorkSchedule
 
-# Importar blueprints
 from src.routes.auth import auth_bp
 from src.routes.user import user_bp
 from src.routes.service import service_bp
@@ -21,10 +20,8 @@ from src.routes.finance import finance_bp
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 
-# Habilitar CORS para todas as rotas
 CORS(app)
 
-# Registrar blueprints
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(service_bp, url_prefix='/api')
@@ -32,7 +29,6 @@ app.register_blueprint(appointment_bp, url_prefix='/api')
 app.register_blueprint(work_schedule_bp, url_prefix='/api')
 app.register_blueprint(finance_bp, url_prefix='/api')
 
-# Configuração do banco de dados
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -40,7 +36,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     
-    # Criar usuário admin padrão se não existir
     from src.models.user import User
     admin = User.query.filter_by(username='admin').first()
     if not admin:
