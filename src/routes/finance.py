@@ -13,7 +13,6 @@ def get_daily_finance():
     try:
         date_str = request.args.get('date', date.today().strftime('%Y-%m-%d'))
         
-        # Buscar agendamentos completados na data
         appointments = Appointment.query.filter_by(
             date=date_str,
             status='completed'
@@ -50,7 +49,6 @@ def get_monthly_finance():
         year = int(request.args.get('year', date.today().year))
         month = int(request.args.get('month', date.today().month))
         
-        # Buscar agendamentos completados no mês
         appointments = Appointment.query.filter(
             extract('year', func.date(Appointment.date)) == year,
             extract('month', func.date(Appointment.date)) == month,
@@ -67,13 +65,11 @@ def get_monthly_finance():
                 total_revenue += appointment.service.price
                 service_name = appointment.service.name
                 
-                # Contagem por serviço
                 if service_name in services_count:
                     services_count[service_name] += 1
                 else:
                     services_count[service_name] = 1
                 
-                # Receita por dia
                 if appointment.date in daily_revenue:
                     daily_revenue[appointment.date] += appointment.service.price
                 else:
@@ -97,7 +93,6 @@ def get_annual_finance():
     try:
         year = int(request.args.get('year', date.today().year))
         
-        # Buscar agendamentos completados no ano
         appointments = Appointment.query.filter(
             extract('year', func.date(Appointment.date)) == year,
             Appointment.status == 'completed'
@@ -113,13 +108,11 @@ def get_annual_finance():
                 total_revenue += appointment.service.price
                 service_name = appointment.service.name
                 
-                # Contagem por serviço
                 if service_name in services_count:
                     services_count[service_name] += 1
                 else:
                     services_count[service_name] = 1
                 
-                # Receita por mês
                 appointment_date = datetime.strptime(appointment.date, '%Y-%m-%d')
                 month_key = f"{appointment_date.year}-{appointment_date.month:02d}"
                 
@@ -145,14 +138,12 @@ def get_finance_summary():
     try:
         today = date.today()
         
-        # Receita de hoje
         today_appointments = Appointment.query.filter_by(
             date=today.strftime('%Y-%m-%d'),
             status='completed'
         ).all()
         today_revenue = sum(apt.service.price for apt in today_appointments if apt.service)
         
-        # Receita do mês atual
         month_appointments = Appointment.query.filter(
             extract('year', func.date(Appointment.date)) == today.year,
             extract('month', func.date(Appointment.date)) == today.month,
@@ -160,14 +151,12 @@ def get_finance_summary():
         ).all()
         month_revenue = sum(apt.service.price for apt in month_appointments if apt.service)
         
-        # Receita do ano atual
         year_appointments = Appointment.query.filter(
             extract('year', func.date(Appointment.date)) == today.year,
             Appointment.status == 'completed'
         ).all()
         year_revenue = sum(apt.service.price for apt in year_appointments if apt.service)
         
-        # Agendamentos pendentes hoje
         pending_today = Appointment.query.filter_by(
             date=today.strftime('%Y-%m-%d'),
             status='pending'
@@ -191,4 +180,3 @@ def get_finance_summary():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
