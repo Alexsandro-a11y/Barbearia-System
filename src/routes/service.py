@@ -29,13 +29,11 @@ def create_service():
     try:
         data = request.get_json()
         
-        # Validações básicas
         required_fields = ['name', 'duration', 'price']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({'error': f'{field} é obrigatório'}), 400
         
-        # Verificar se nome já existe
         if Service.query.filter_by(name=data['name']).first():
             return jsonify({'error': 'Serviço com este nome já existe'}), 400
         
@@ -67,7 +65,6 @@ def update_service(service_id):
         
         data = request.get_json()
         
-        # Atualizar campos se fornecidos
         if 'name' in data:
             # Verificar se novo nome já existe
             existing = Service.query.filter_by(name=data['name']).first()
