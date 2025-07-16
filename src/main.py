@@ -40,15 +40,15 @@ with app.app_context():
     admin = User.query.filter_by(username='admin').first()
     if not admin:
         admin = User(
-            username='admin',
+            username='alex',
             role='admin',
-            name='Administrador',
-            email='admin@barbearia.com'
+            name='Alex Dias',
+            email='alex@barbearia.com'
         )
-        admin.set_password('admin123')
+        admin.set_password('alex123')
         db.session.add(admin)
         db.session.commit()
-        print("Usuário admin criado: admin/admin123")
+        print("Usuário admin criado: alex/alex123")
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
